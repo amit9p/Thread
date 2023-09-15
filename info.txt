@@ -16,16 +16,20 @@ END AS QUES_TXT
 
 
 
-
 SELECT 
     TRIM(
-        REGEXP_REPLACE(
+        REPLACE(
             REGEXP_REPLACE(
-                RAW_DFN_QUES_TXT, 
-                '(?!\\${e://Field/Company_Email_Theme})<[^>]+>', 
+                REGEXP_REPLACE(
+                    RAW_DFN_QUES_TXT, 
+                    '(&[^&]+;|<(?!\\${e://Field/[^>]+>)[^>]*)>', 
+                    ' '
+                ), 
+                ' +', 
                 ' '
-            ),
-            ' +',
+            ), 
+            '\n', 
             ' '
         )
-    ) AS QUES_TXT
+    ) as QUES_TXT
+
