@@ -19,19 +19,13 @@ END AS QUES_TXT
 
 SELECT 
     TRIM(
-        REPLACE(
+        REGEXP_REPLACE(
             REGEXP_REPLACE(
-                REGEXP_REPLACE(
-                    RAW_DFN_QUES_TXT, 
-                    '(&[^&]+;|<[^>]+?>)', 
-                    ' '
-                ),
-                '\\">| +', 
+                RAW_DFN_QUES_TXT, 
+                '(?!\\${e://Field/Company_Email_Theme})<[^>]+>', 
                 ' '
-            ), 
-            '\n', 
+            ),
+            ' +',
             ' '
         )
     ) AS QUES_TXT
-
-
