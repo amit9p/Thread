@@ -14,3 +14,24 @@ SELECT CASE
     ELSE NULL
 END AS QUES_TXT
 
+
+
+
+SELECT 
+    TRIM(
+        REPLACE(
+            REGEXP_REPLACE(
+                REGEXP_REPLACE(
+                    RAW_DFN_QUES_TXT, 
+                    '(&[^&]+;|<[^>]+?>)', 
+                    ' '
+                ),
+                '\\">| +', 
+                ' '
+            ), 
+            '\n', 
+            ' '
+        )
+    ) AS QUES_TXT
+
+
