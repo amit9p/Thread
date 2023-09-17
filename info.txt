@@ -24,3 +24,16 @@ SELECT
       '\n', ' '))  -- Replace newline with space
   as QUES_TXT
 FROM YOUR_TABLE;
+
+
+
+-- The column 'CHO_ID' is constructed from JSON keys where we expect numeric values.
+-- 1. When the key is 'TEXT', we default to a numeric value of '1'. 
+--    This is because 'TEXT' does not represent a numeric value, but we require a numeric identifier.
+-- 2. For keys that start with 'x' (like 'x1', 'x19', etc.), we remove the 'x' to extract the numeric part.
+--    This is done to standardize the CHO_ID as a numeric value, making it consistent for downstream processing.
+select 
+  CASE
+    when c.key::varchar = 'TEXT' then 1  -- Default to '1' when key is 'TEXT'
+    else replace (coalesce(q.ques_recode_vals_json[c.key]::varchar, c.key::varchar, c.index::varchar, '1'), 'x', '')::number(38,0)
+  end as cho_id
