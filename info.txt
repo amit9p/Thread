@@ -1,39 +1,17 @@
-SELECT 
-  CASE 
-    WHEN RAW_DFN_QUES_TXT LIKE '%${e://Field/Company_Email_Theme}%' THEN
-      TRIM(REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(RAW_DFN_QUES_TXT, '(&[^&]+;|<([^>]|\\n)*>)',' '),' +',' '),'\n',' '))
-    ELSE
-      TRIM(REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(RAW_DFN_QUES_TXT, '(&[^&]+;|<([^>]|\\n)*>|\\">)',' '),' +',' '),'\n',' '))
-  END as QUES_TXT
-FROM YOUR_TABLE;
+surv_ques_cho as (
 
-
-SELECT CASE 
-    WHEN LENGTH(D.QUES_TXT) >= LENGTH(I.QUES_TXT) OR I.QUES_TXT IS NULL THEN D.QUES_TXT
-    WHEN LENGTH(I.QUES_TXT) > LENGTH(D.QUES_TXT) OR D.QUES_TXT IS NULL THEN I.QUES_TXT
-    ELSE NULL
-END AS QUES_TXT
-
-
-
-SELECT
-  TRIM(REPLACE(
-      REGEXP_REPLACE(
-          REGEXP_REPLACE(RAW_DFN_QUES_TXT, '<[^>]+?>', ''),  -- Remove HTML tags
-          '&nbsp;', ' '),  -- Replace HTML entity for space
-      '\n', ' '))  -- Replace newline with space
-  as QUES_TXT
-FROM YOUR_TABLE;
-
-
-
--- The column 'CHO_ID' is constructed from JSON keys where we expect numeric values.
--- 1. When the key is 'TEXT', we default to a numeric value of '1'. 
---    This is because 'TEXT' does not represent a numeric value, but we require a numeric identifier.
--- 2. For keys that start with 'x' (like 'x1', 'x19', etc.), we remove the 'x' to extract the numeric part.
---    This is done to standardize the CHO_ID as a numeric value, making it consistent for downstream processing.
 select 
-  CASE
-    when c.key::varchar = 'TEXT' then 1  -- Default to '1' when key is 'TEXT'
-    else replace (coalesce(q.ques_recode_vals_json[c.key]::varchar, c.key::varchar, c.index::varchar, '1'), 'x', '')::number(38,0)
-  end as cho_id
+I.CHO_SYSKEY,
+I.QUES_SYS_KEY,
+I.SURV_ID,
+COALESCE(I.CHO_ID , D.CHO_ID) AS CHO_ID,
+COALESCE(I.CHO_TXT, D.CHO_DSPL_TXT) AS CHO_DSPL_TXT
+FROM
+import_choices I
+
+LEFT JOIN 
+definitions_choices D
+using (SURV_ID , QUES_ID, CHO_ID)
+
+)
+
