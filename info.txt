@@ -1,48 +1,8 @@
-with definitions_choices as (
-  select * from EDA_CDO_SURVEY_DEV.CDOSURVEY_T.stg_surv_ques_cho
-),
-import_choices as (
-  select * from EDA_CDO_SURVEY_DEV.CDO_SURVEY_T.stg_impt_id_map
-  qualify row_number() over (partition by surv_id , ques_id , cho_id order by load_dt desc) = 1
-),
-cho_syskey_subquery as (
-  select DISTINCT SURV_ID, QUES_ID, CHO_SYSKEY
-  from definitions_choices
-)
-
-select 
-  COALESCE(sub.CHO_SYSKEY, '-1') as CHO_SYSKEY,
-  I.QUES_SYS_KEY,
-  I.SURV_ID,
-  COALESCE(I.CHO_ID , D.CHO_ID) AS CHO_ID,
-  COALESCE(I.CHO_DSPL_TXT, D.CHO_TXT) AS CHO_DSPL_TXT
-FROM import_choices I
-
-LEFT JOIN definitions_choices D
-using (SURV_ID , QUES_ID, CHO_ID)
-
-LEFT JOIN cho_syskey_subquery sub
-using (SURV_ID, QUES_ID)
-------------------------------------------------------------------------------
-
-are joining definitions_choices (aliased as D) with import_choices (aliased as I) using SURV_ID, QUES_ID, and CHO_ID. If there is no match between these two tables for a given row in import_choices, the LEFT JOIN will produce NULL values for the columns from definitions_choices
-
-You are getting -1 for CHO_SYSKEY in the output because you're using COALESCE(D.CHO_SYSKEY, '-1'). Since there are rows in import_choices that do not have corresponding matches in definitions_choices, D.CHO_SYSKEY is NULL for these rows, and the COALESCE function returns -1.
-
-If you want to have the same CHO_SYSKEY value for all rows coming from definitions_choices, you might consider doing the following:
-
-Separate out the CHO_SYSKEY selection as a subquery which fetches the value based on SURV_ID and QUES_ID.
-Then join this subquery to your main query.
-
-In this example, cho_syskey_subquery is a subquery that selects the distinct SURV_ID, QUES_ID, and CHO_SYSKEY from definitions_choices. This subquery is then left joined to the main query, allowing you to select CHO_SYSKEY based on SURV_ID and QUES_ID for each row in the result.
-----------------------------------------------------------------------------------------
-
-
 SELECT 
   COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS QID5 
 FROM 
   EDA_CDO_SURVEY_DEV.CDOSURVEY_T.lambda_split_surv_rspn_hist 
 WHERE 
   SURV_ID = 'SV_2c2q'
-  AND TRY_CAST(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS FLOAT) > 0;
-
+  AND REGEXP_LIKE(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase), '^[0-9]+(\.[0-9]+)?$')
+  AND TO_NUMBER(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) > 0;
