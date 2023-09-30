@@ -4,35 +4,7 @@ FROM
   EDA_CDO_SURVEY_DEV.CDOSURVEY_T.lambda_split_surv_rspn_hist 
 WHERE 
   SURV_ID = 'SV_2c2q'
-  AND REGEXP_LIKE(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase), '^[0-9]+(\.[0-9]+)?$')
-  AND TO_NUMBER(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) > 0;
-
-
-
-SELECT 
-  COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS QID5 
-FROM 
-  EDA_CDO_SURVEY_DEV.CDOSURVEY_T.lambda_split_surv_rspn_hist 
-WHERE 
-  SURV_ID = 'SV_2c2q'
-  AND NULLIF(TRIM(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)), '') IS NOT NULL
-  AND TO_NUMBER(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) >= 0;
-
-
-
- SELECT 
-  COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS QID5 
-FROM 
-  EDA_CDO_SURVEY_DEV.CDOSURVEY_T.lambda_split_surv_rspn_hist 
-WHERE 
-  SURV_ID = 'SV_2c2q'
   AND (
     COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) IS NULL
     OR TRIM(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) = ''
-    OR (
-      REGEXP_LIKE(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase), '^-?[0-9]+(\.[0-9]+)?$') 
-      AND TO_NUMBER(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) < 0
-    )
   );
-
-
