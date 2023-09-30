@@ -35,3 +35,14 @@ Separate out the CHO_SYSKEY selection as a subquery which fetches the value base
 Then join this subquery to your main query.
 
 In this example, cho_syskey_subquery is a subquery that selects the distinct SURV_ID, QUES_ID, and CHO_SYSKEY from definitions_choices. This subquery is then left joined to the main query, allowing you to select CHO_SYSKEY based on SURV_ID and QUES_ID for each row in the result.
+----------------------------------------------------------------------------------------
+
+
+SELECT 
+  COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS QID5 
+FROM 
+  EDA_CDO_SURVEY_DEV.CDOSURVEY_T.lambda_split_surv_rspn_hist 
+WHERE 
+  SURV_ID = 'SV_2c2q'
+  AND TRY_CAST(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS FLOAT) > 0;
+
