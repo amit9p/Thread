@@ -8,3 +8,16 @@ WHERE
     COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) IS NULL
     OR TRIM(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) = ''
   );
+
+
+SELECT 
+  COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS QID5 
+FROM 
+  EDA_CDO_SURVEY_DEV.CDOSURVEY_T.lambda_split_surv_rspn_hist 
+WHERE 
+  SURV_ID = 'SV_2c2q'
+  AND (
+    COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) IS NULL 
+    OR TRIM(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) = '' 
+    OR LOWER(TRIM(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase))) = 'null'
+  );
