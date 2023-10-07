@@ -1,23 +1,26 @@
-SELECT 
-  COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS QID5 
-FROM 
-  EDA_CDO_SURVEY_DEV.CDOSURVEY_T.lambda_split_surv_rspn_hist 
-WHERE 
-  SURV_ID = 'SV_2c2q'
-  AND (
-    COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) IS NULL
-    OR TRIM(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) = ''
-  );
+Custom Test Creation: In your custom_tests folder inside macro, create a new SQL file named check_zero_records.sql:
 
 
-SELECT 
-  COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) AS QID5 
-FROM 
-  EDA_CDO_SURVEY_DEV.CDOSURVEY_T.lambda_split_surv_rspn_hist 
-WHERE 
-  SURV_ID = 'SV_2c2q'
-  AND (
-    COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase) IS NULL 
-    OR TRIM(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase)) = '' 
-    OR LOWER(TRIM(COALESCE(RSPN_JSON:result:values:OverallEase, RSPN_JSON:values:OverallEase))) = 'null'
-  );
+-- custom_tests/check_zero_records.sql
+
+{% macro check_zero_records() %}
+
+select distinct *
+from {{ ref('surv_rspn_fact') }}
+where SURV_ID = 'SV_2c2Qt1a0Z0AFmmh'
+and rspn_id = 'R_erGDbT577dFCHKB'
+and rspn_id not in (
+select distinct
+rspn_id
+from {{ ref('surv_rspn_fact') }}
+where SURV_ID = 'SV_2c2Qt1a0Z0AFmmh'
+and ((IMPT_ID = 'QID5' and cho_val >= 0) or IMPT_ID = 'QID5'
+or (IMPT_ID = 'QID2' and cho_val >= 0 ) or IMPT_ID = 'QID2'
+or (IMPT_ID ='QID3' and cho_val >= 0) or IMPT_ID = 'QID3'
+or IMPT_ID ='QID1'
+or IMPT_ID='QID4'))
+
+{% endmacro %}
+
+
+
