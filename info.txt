@@ -1,26 +1,16 @@
-Custom Test Creation: In your custom_tests folder inside macro, create a new SQL file named check_zero_records.sql:
+with definitions_choices as (
+    select * from EDA_CDO_SURVEY_DEV.CDOSURVEY_T.stg_surv_ques_cho
+),
+import_choices as (
+    select * from EDA_CDO_SURVEY_DEV.CDO_SURVEY_T.stg_impt_id_map
+    qualify row_number() over (partition by surv_id , ques_id , cho_id order by load_dt desc) = 1
+)
 
-
--- custom_tests/check_zero_records.sql
-
-{% macro check_zero_records() %}
-
-select distinct *
-from {{ ref('surv_rspn_fact') }}
-where SURV_ID = 'SV_2c2Qt1a0Z0AFmmh'
-and rspn_id = 'R_erGDbT577dFCHKB'
-and rspn_id not in (
-select distinct
-rspn_id
-from {{ ref('surv_rspn_fact') }}
-where SURV_ID = 'SV_2c2Qt1a0Z0AFmmh'
-and ((IMPT_ID = 'QID5' and cho_val >= 0) or IMPT_ID = 'QID5'
-or (IMPT_ID = 'QID2' and cho_val >= 0 ) or IMPT_ID = 'QID2'
-or (IMPT_ID ='QID3' and cho_val >= 0) or IMPT_ID = 'QID3'
-or IMPT_ID ='QID1'
-or IMPT_ID='QID4'))
-
-{% endmacro %}
-
-
-
+select 
+    COALESCE(D.CHO_SYSKEY, '-1') as CHO_SYSKEY, -- Use D.CHO_SYSKEY if available
+    COALESCE(I.QUES_SYS_KEY, D.QUES_SYS_KEY) as QUES_SYS_KEY,
+    COALESCE(I.SURV_ID, D.SURV_ID) as SURV_ID,
+    COALESCE(I.CHO_ID, D.CHO_ID) as CHO_ID,
+    COALESCE(I.CHO_DSPL_TXT, D.CHO_TXT) as CHO_DSPL_TXT
+FROM import_choices I
+LEFT JOIN definitions_choices D using (SURV_ID , QUES_ID, CHO_ID)
