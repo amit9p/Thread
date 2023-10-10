@@ -1,16 +1,30 @@
-with definitions_choices as (
-    select * from EDA_CDO_SURVEY_DEV.CDOSURVEY_T.stg_surv_ques_cho
+WITH definitions_choices AS (
+    SELECT *
+    FROM EDA_CDO_SURVEY_DEV.CDO_SURVEY_T._aprasa10_stg_surv_ques_cho 
+    WHERE SURV_ID IS NOT NULL AND CHO_ID IS NOT NULL
 ),
-import_choices as (
-    select * from EDA_CDO_SURVEY_DEV.CDO_SURVEY_T.stg_impt_id_map
-    qualify row_number() over (partition by surv_id , ques_id , cho_id order by load_dt desc) = 1
+
+import_choices AS (
+    SELECT * 
+    FROM EDA_CDO_SURVEY_DEV.CDO_SURVEY_T._aprasa10_stg_impt_id_map 
+    WHERE SURV_ID IS NOT NULL AND CHO_ID IS NOT NULL
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY SURV_ID, QUES_ID, CHO_ID ORDER BY LOAD_DT DESC) = 1
+),
+
+cho_syskey_subquery AS (
+    SELECT DISTINCT SURV_ID, QUES_ID, CHO_SYSKEY
+    FROM definitions_choices
 )
 
-select 
-    COALESCE(D.CHO_SYSKEY, '-1') as CHO_SYSKEY, -- Use D.CHO_SYSKEY if available
-    COALESCE(I.QUES_SYS_KEY, D.QUES_SYS_KEY) as QUES_SYS_KEY,
-    COALESCE(I.SURV_ID, D.SURV_ID) as SURV_ID,
-    COALESCE(I.CHO_ID, D.CHO_ID) as CHO_ID,
-    COALESCE(I.CHO_DSPL_TXT, D.CHO_TXT) as CHO_DSPL_TXT
-FROM import_choices I
-LEFT JOIN definitions_choices D using (SURV_ID , QUES_ID, CHO_ID)
+SELECT 
+    COALESCE(sub.CHO_SYSKEY, '-1') AS CHO_SYSKEY,
+    D.QUES_SYSKEY,
+    D.SURV_ID,
+    COALESCE(D.CHO_ID, I.CHO_ID) AS CHO_ID,
+    COALESCE(D.CHO_DSPL_TXT, I.CHO_TXT) AS CHO_DSPL_TXT
+FROM definitions_choices D
+
+LEFT JOIN import_choices I USING (SURV_ID, QUES_ID, CHO_ID)
+LEFT JOIN cho_syskey_subquery sub USING (SURV_ID, QUES_ID)
+
+WHERE D.SURV_ID = 'SV_1BbTij7JqgYYfpH' AND D.QUES_SYSKEY = 'b77b320cc3823c9dde474f3aed89c5ae';
