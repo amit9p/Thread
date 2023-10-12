@@ -1,30 +1,29 @@
-WITH definitions_choices AS (
-    SELECT *
-    FROM EDA_CDO_SURVEY_DEV.CDO_SURVEY_T._aprasa10_stg_surv_ques_cho 
-    WHERE SURV_ID IS NOT NULL AND CHO_ID IS NOT NULL
-),
+In your macro/custom_test folder, create a file named my_custom_test.sql and add 
 
-import_choices AS (
-    SELECT * 
-    FROM EDA_CDO_SURVEY_DEV.CDO_SURVEY_T._aprasa10_stg_impt_id_map 
-    WHERE SURV_ID IS NOT NULL AND CHO_ID IS NOT NULL
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY SURV_ID, QUES_ID, CHO_ID ORDER BY LOAD_DT DESC) = 1
-),
+{% macro test_my_custom_test(model) %}
 
-cho_syskey_subquery AS (
-    SELECT DISTINCT SURV_ID, QUES_ID, CHO_SYSKEY
-    FROM definitions_choices
-)
+select distinct *
+from {{ model }}
+where SURV_ID = 'SV_2c2Qt1a0Z0AFmmh'
+and rspn_id = 'R_erGDbT577dFCHKB'
+and rspn_id not in (
+select distinct
+rspn_id
+from {{ model }}
+where SURV_ID = 'SV_2c2Qt1a0Z0AFmmh'
+and ((IMPT_ID = 'QID5' and cho_val > =0) or IMPT_ID = 'QID5'
+or (IMPT_ID = 'QID2' and cho_val >=0 ) or IMPT_ID = 'QID2'
+or (IMPT_ID ='QID3' and cho_val >=0) or IMPT_D = 'QID3'
+or IMPT_ID ='QID1'
+or IMPT_ID='QID4))
 
-SELECT 
-    COALESCE(sub.CHO_SYSKEY, '-1') AS CHO_SYSKEY,
-    D.QUES_SYSKEY,
-    D.SURV_ID,
-    COALESCE(D.CHO_ID, I.CHO_ID) AS CHO_ID,
-    COALESCE(D.CHO_DSPL_TXT, I.CHO_TXT) AS CHO_DSPL_TXT
-FROM definitions_choices D
+{% endmacro %}
 
-LEFT JOIN import_choices I USING (SURV_ID, QUES_ID, CHO_ID)
-LEFT JOIN cho_syskey_subquery sub USING (SURV_ID, QUES_ID)
 
-WHERE D.SURV_ID = 'SV_1BbTij7JqgYYfpH' AND D.QUES_SYSKEY = 'b77b320cc3823c9dde474f3aed89c5ae';
+version: 2
+
+models:
+  - name: surv_rspn_fact
+    tests:
+      - dbt_project_name.test_my_custom_test
+
