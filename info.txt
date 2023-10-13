@@ -1,25 +1,7 @@
-To ensure that only specific members (like admin/owners) can merge pull requests in a GitHub repository, and others can just review, you can use a combination of branch protection rules and user/team permissions. Here's a step-by-step guide:
-
-Setting up User/Team permissions:
-
-Navigate to the main page of the repository.
-
-Click on the Settings tab.
-In the left sidebar, click on Manage access.
-Ensure that team members you wish to restrict are added with Read or Write access. They should not have Admin or Maintain permissions, as those would allow them to override certain protection rules.
-Setting up Branch Protection Rules:
-
-Still in the Settings tab of your repository:
-
-Click on Branches.
-In the "Branch protection rules" section, click on Add rule.
-In the "Branch name pattern", enter the name of the branch you wish to protect (e.g., prod or main).
-Check Require pull request reviews before merging.
-You can also specify how many approving reviews are required.
-If you want to ensure that specific code owners review certain parts of your codebase, you can enable Require review from Code Owners.
-Check Restrict who can push to matching branches and add the specific users or teams who should have push access to this branch. This ensures that only the selected users/teams can merge pull requests or push directly to the branch.
-If needed, enable other protection settings that match your workflow.
-Click on Create or Save changes.
-Recommended: Enable Include administrators under "Enforce protection rules". This ensures that even repository administrators have to adhere to the protection rules (e.g., cannot force push).
-
-With these settings in place, only the specified members will be able to merge pull requests into the protected branch, while others can still review and approve. Remember that settings and UI labels might change over time, so it's good to stay updated with GitHub's official documentation.
+{% test test_defect_122(model) %}
+with validation as (
+    select CHO_DSPL_TXT from {{ model }}
+    where SURV_ID = 'SV_6L2tJtBNbS2qHLn' and QUES_SYSKEY in ({{ var('ques_syskey_value') }})
+),
+...
+{% endtest %}
