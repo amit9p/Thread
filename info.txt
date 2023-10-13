@@ -1,29 +1,25 @@
-In your macro/custom_test folder, create a file named my_custom_test.sql and add 
+To ensure that only specific members (like admin/owners) can merge pull requests in a GitHub repository, and others can just review, you can use a combination of branch protection rules and user/team permissions. Here's a step-by-step guide:
 
-{% macro test_my_custom_test(model) %}
+Setting up User/Team permissions:
 
-select distinct *
-from {{ model }}
-where SURV_ID = 'SV_2c2Qt1a0Z0AFmmh'
-and rspn_id = 'R_erGDbT577dFCHKB'
-and rspn_id not in (
-select distinct
-rspn_id
-from {{ model }}
-where SURV_ID = 'SV_2c2Qt1a0Z0AFmmh'
-and ((IMPT_ID = 'QID5' and cho_val > =0) or IMPT_ID = 'QID5'
-or (IMPT_ID = 'QID2' and cho_val >=0 ) or IMPT_ID = 'QID2'
-or (IMPT_ID ='QID3' and cho_val >=0) or IMPT_D = 'QID3'
-or IMPT_ID ='QID1'
-or IMPT_ID='QID4))
+Navigate to the main page of the repository.
 
-{% endmacro %}
+Click on the Settings tab.
+In the left sidebar, click on Manage access.
+Ensure that team members you wish to restrict are added with Read or Write access. They should not have Admin or Maintain permissions, as those would allow them to override certain protection rules.
+Setting up Branch Protection Rules:
 
+Still in the Settings tab of your repository:
 
-version: 2
+Click on Branches.
+In the "Branch protection rules" section, click on Add rule.
+In the "Branch name pattern", enter the name of the branch you wish to protect (e.g., prod or main).
+Check Require pull request reviews before merging.
+You can also specify how many approving reviews are required.
+If you want to ensure that specific code owners review certain parts of your codebase, you can enable Require review from Code Owners.
+Check Restrict who can push to matching branches and add the specific users or teams who should have push access to this branch. This ensures that only the selected users/teams can merge pull requests or push directly to the branch.
+If needed, enable other protection settings that match your workflow.
+Click on Create or Save changes.
+Recommended: Enable Include administrators under "Enforce protection rules". This ensures that even repository administrators have to adhere to the protection rules (e.g., cannot force push).
 
-models:
-  - name: surv_rspn_fact
-    tests:
-      - dbt_project_name.test_my_custom_test
-
+With these settings in place, only the specified members will be able to merge pull requests into the protected branch, while others can still review and approve. Remember that settings and UI labels might change over time, so it's good to stay updated with GitHub's official documentation.
