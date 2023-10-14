@@ -1,7 +1,12 @@
-{% test test_defect_122(model) %}
-with validation as (
-    select CHO_DSPL_TXT from {{ model }}
-    where SURV_ID = 'SV_6L2tJtBNbS2qHLn' and QUES_SYSKEY in ({{ var('ques_syskey_value') }})
-),
-...
-{% endtest %}
+validation_errors as (
+    select 
+        d.QUES_ID as derived_ques_id,
+        d.TOTAL_QUESID as derived_total_ques_id,
+        des.QUES_ID as desired_ques_id,
+        des.TOTAL_QUES_ID as desired_total_ques_id
+    from desired_values des
+    left join derived_values d on des.QUES_ID = d.QUES_ID
+    where 
+        d.QUES_ID is null -- QUES_ID exists in desired_values but not in derived_values
+        or des.TOTAL_QUES_ID <> d.TOTAL_QUESID -- TOTAL_QUES_ID values do not match
+)
