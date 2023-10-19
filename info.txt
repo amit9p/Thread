@@ -1,11 +1,11 @@
 CASE 
     WHEN SURV_ID = 'SV_2c2Qt1a0z0AFmmh'
          AND NOT (
-              TO_NUMBER(COALESCE(RSPN_JSON:result:values:OverallEase, 'NULL_VALUE')) >= 0
-              OR TO_NUMBER(COALESCE(RSPN_JSON:result:values:RecomendQuestion, 'NULL_VALUE')) >= 0
-              OR TO_NUMBER(COALESCE(RSPN_JSON:result:values:RepresentativeQuestion, 'NULL_VALUE')) >= 0
-              OR TRIM(COALESCE(RSPN_JSON:result:values:CustAgentOtherQuestion, '')) <> ''
-              OR TRIM(COALESCE(RSPN_JSON:result:values:ResolveIssueInput, '')) <> ''
+              TO_NUMBER(COALESCE(OBJECT_INSERT(RSPN_JSON, 'result:values:OverallEase', 'NULL_VALUE')::STRING, 'NULL_VALUE')) >= 0
+              OR TO_NUMBER(COALESCE(OBJECT_INSERT(RSPN_JSON, 'result:values:RecomendQuestion', 'NULL_VALUE')::STRING, 'NULL_VALUE')) >= 0
+              OR TO_NUMBER(COALESCE(OBJECT_INSERT(RSPN_JSON, 'result:values:RepresentativeQuestion', 'NULL_VALUE')::STRING, 'NULL_VALUE')) >= 0
+              OR TRIM(COALESCE(OBJECT_INSERT(RSPN_JSON, 'result:values:CustAgentOtherQuestion', '')::STRING, '')) <> ''
+              OR TRIM(COALESCE(OBJECT_INSERT(RSPN_JSON, 'result:values:ResolveIssueInput', '')::STRING, '')) <> ''
              ) THEN 1
     ELSE 0
 END AS SURV_NSTD_FILT_OUT_IND
