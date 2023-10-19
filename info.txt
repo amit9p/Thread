@@ -1,13 +1,11 @@
-
-CASE
-    WHEN SURV_ID = 'SV_2c2Qt1a0z0AFmmh' 
-    AND (
-        TRY_CAST(COALESCE(RSPN_JSON:result:values:OverallEase, 0) AS FLOAT) >= 0
-        OR TRY_CAST(COALESCE(RSPN_JSON:result:values:RecomendQuestion, 0) AS FLOAT) >= 0
-        OR TRY_CAST(COALESCE(RSPN_JSON:result:values:RepresentativeQuestion, 0) AS FLOAT) >= 0
-        OR TRIM(CAST(COALESCE(RSPN_JSON:result:values:CustAgentOtherQuestion, '') AS STRING)) <> ''
-        OR TRIM(CAST(COALESCE(RSPN_JSON:result:values:ResolveIssueInput, '') AS STRING)) <> ''
-    )
-    THEN 0
-    ELSE 1
+CASE 
+    WHEN SURV_ID = 'SV_2c2Qt1a0z0AFmmh'
+         AND NOT (
+              TO_NUMBER(COALESCE(RSPN_JSON:result:values:OverallEase, 'NULL_VALUE')) >= 0
+              OR TO_NUMBER(COALESCE(RSPN_JSON:result:values:RecomendQuestion, 'NULL_VALUE')) >= 0
+              OR TO_NUMBER(COALESCE(RSPN_JSON:result:values:RepresentativeQuestion, 'NULL_VALUE')) >= 0
+              OR TRIM(COALESCE(RSPN_JSON:result:values:CustAgentOtherQuestion, '')) <> ''
+              OR TRIM(COALESCE(RSPN_JSON:result:values:ResolveIssueInput, '')) <> ''
+             ) THEN 1
+    ELSE 0
 END AS SURV_NSTD_FILT_OUT_IND
