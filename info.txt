@@ -1,17 +1,13 @@
-Issue:
-Some records were not displaying as expected. On investigation, it was found that certain records were filtered out due to the conditions in the left join.
 
-Solution:
-To retrieve the missing records:
-
-An additional UNION query was introduced. This ensures that even if the records are missing in one part of the dataset (either definitions_choices or import_choices), they can still be included in the final result.
-Used a LEFT JOIN with import_choices and definitions_choices, which retrieves the combined data from both sources.
-Introduced a filter to eliminate specific records where CHO_ID is 1 and CHO_DSPL_TXT is '1'.
-Reasoning:
-
-The union operation ensures that if a record is present in either definitions_choices or import_choices, it will appear in the final output. This handles scenarios where a record might be filtered out from one source but still exists in the other.
-The LEFT JOIN ensures that even if a matching record doesn't exist in the definitions_choices, the data from import_choices will still be displayed, and vice versa.
-The filter (WHERE NOT (CHO_ID = 1 AND CHO_DSPL_TXT= '1')) ensures that specific undesired records are excluded from the final result.
-Impact of the Change:
-This fix ensures that all relevant records from both definitions_choices and import_choices are included in the final result, addressing the missing records issue. However, this might also mean that the final result set could have more records than before, so dependent systems or processes should be checked to ensure they can handle the potentially larger dataset.
-
+CASE
+    WHEN SURV_ID = 'SV_2c2Qt1a0z0AFmmh' 
+    AND (
+        TRY_CAST(COALESCE(RSPN_JSON:result:values:OverallEase, 0) AS FLOAT) >= 0
+        OR TRY_CAST(COALESCE(RSPN_JSON:result:values:RecomendQuestion, 0) AS FLOAT) >= 0
+        OR TRY_CAST(COALESCE(RSPN_JSON:result:values:RepresentativeQuestion, 0) AS FLOAT) >= 0
+        OR TRIM(CAST(COALESCE(RSPN_JSON:result:values:CustAgentOtherQuestion, '') AS STRING)) <> ''
+        OR TRIM(CAST(COALESCE(RSPN_JSON:result:values:ResolveIssueInput, '') AS STRING)) <> ''
+    )
+    THEN 0
+    ELSE 1
+END AS SURV_NSTD_FILT_OUT_IND
