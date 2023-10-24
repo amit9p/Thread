@@ -1,16 +1,29 @@
-CASE 
-    WHEN SURV_ID = 'SV_2c2Qt1a0z0AFmmh'
-         AND (
-              OBJECT_INSERT(RSPN_JSON, 'result:values:OverallEase', NULL)::TEXT = RSPN_JSON::TEXT 
-              OR TO_NUMBER(COALESCE(RSPN_JSON:result:values:OverallEase, 'NULL_VALUE')) >= 0
-              OR OBJECT_INSERT(RSPN_JSON, 'result:values:RecomendQuestion', NULL)::TEXT = RSPN_JSON::TEXT
-              OR TO_NUMBER(COALESCE(RSPN_JSON:result:values:RecomendQuestion, 'NULL_VALUE')) >= 0
-              OR OBJECT_INSERT(RSPN_JSON, 'result:values:RepresentativeQuestion', NULL)::TEXT = RSPN_JSON::TEXT
-              OR TO_NUMBER(COALESCE(RSPN_JSON:result:values:RepresentativeQuestion, 'NULL_VALUE')) >= 0
-              OR OBJECT_INSERT(RSPN_JSON, 'result:values:CustAgentOtherQuestion', NULL)::TEXT = RSPN_JSON::TEXT
-              OR TRIM(COALESCE(RSPN_JSON:result:values:CustAgentOtherQuestion, '')) <> ''
-              OR OBJECT_INSERT(RSPN_JSON, 'result:values:ResolveIssueInput', NULL)::TEXT = RSPN_JSON::TEXT
-              OR TRIM(COALESCE(RSPN_JSON:result:values:ResolveIssueInput, '')) <> ''
-             ) THEN 1
-    ELSE 0
-END AS SURV_NSTD_FILT_OUT_IND
+Feature: Ad-hoc Execution of Stored Procedure due to Job Failure
+
+  As a database administrator
+  I want to call the stored procedure ad-hoc
+  So that I can address job failures without waiting for the next scheduled run
+
+  Background:
+    Given I have access to the database system
+    And the stored procedure "ProcessJob" exists
+    And there has been a recent job failure
+
+  Scenario: Execute Stored Procedure Ad-hoc After Job Failure
+    Given I am connected to the database
+    When I execute the stored procedure "ProcessJob"
+    Then the stored procedure should execute successfully
+    And the results should be stored in the database
+
+  Scenario: Notify Relevant Parties After Successful Ad-hoc Execution
+    Given the stored procedure "ProcessJob" has executed successfully ad-hoc
+    When the execution completes
+    Then a notification should be sent to the relevant parties about the successful execution
+
+  Scenario: Handle Failure of Ad-hoc Execution
+    Given I am connected to the database
+    When I attempt to execute the stored procedure "ProcessJob" and it fails
+    Then an error message should be displayed
+    And a log entry should be made detailing the failure
+    And a notification should be sent to the system administrator
+
