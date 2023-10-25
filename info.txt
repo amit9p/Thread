@@ -1,29 +1,18 @@
-Feature: Ad-hoc Execution of Stored Procedure due to Job Failure
+Feature: Snowflake Stored Procedure Error Handling
 
   As a database administrator
-  I want to call the stored procedure ad-hoc
-  So that I can address job failures without waiting for the next scheduled run
+  I want to ensure that our stored procedure handles errors gracefully
+  So that our system can recover from errors and provide meaningful feedback
+  
+  Scenario: Error is caught and a meaningful message is returned without failing
+    Given I have a stored procedure with a try-catch block
+    And the catch block has been updated to "return" instead of "throw"
+    When I invoke the stored procedure with data that would cause an error
+    Then the stored procedure should not fail
+    And I should receive a meaningful error message describing the issue
 
-  Background:
-    Given I have access to the database system
-    And the stored procedure "ProcessJob" exists
-    And there has been a recent job failure
-
-  Scenario: Execute Stored Procedure Ad-hoc After Job Failure
-    Given I am connected to the database
-    When I execute the stored procedure "ProcessJob"
+  Scenario: Normal execution without errors
+    Given I have a stored procedure with a try-catch block
+    When I invoke the stored procedure with valid data
     Then the stored procedure should execute successfully
-    And the results should be stored in the database
-
-  Scenario: Notify Relevant Parties After Successful Ad-hoc Execution
-    Given the stored procedure "ProcessJob" has executed successfully ad-hoc
-    When the execution completes
-    Then a notification should be sent to the relevant parties about the successful execution
-
-  Scenario: Handle Failure of Ad-hoc Execution
-    Given I am connected to the database
-    When I attempt to execute the stored procedure "ProcessJob" and it fails
-    Then an error message should be displayed
-    And a log entry should be made detailing the failure
-    And a notification should be sent to the system administrator
-
+    And I should receive the expected results
