@@ -1,18 +1,4 @@
-Feature: Snowflake Stored Procedure Error Handling
-
-  As a database administrator
-  I want to ensure that our stored procedure handles errors gracefully
-  So that our system can recover from errors and provide meaningful feedback
-  
-  Scenario: Error is caught and a meaningful message is returned without failing
-    Given I have a stored procedure with a try-catch block
-    And the catch block has been updated to "return" instead of "throw"
-    When I invoke the stored procedure with data that would cause an error
-    Then the stored procedure should not fail
-    And I should receive a meaningful error message describing the issue
-
-  Scenario: Normal execution without errors
-    Given I have a stored procedure with a try-catch block
-    When I invoke the stored procedure with valid data
-    Then the stored procedure should execute successfully
-    And I should receive the expected results
+Scenario: Successful Execution of Stored Procedure
+    When I execute the stored procedure "CalculateMonthlySales"
+    Then the procedure should finish without errors
+    And I should see the monthly sales data on my screen
