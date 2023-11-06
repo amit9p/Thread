@@ -14,3 +14,15 @@ AS CALL EDA_CDO_SURVEY_DEV.CDO_SURVEY_LOAD.APRASA10_QLTRCS_SURV_QUESMAP_LOAD_PRC
 
 SCHEDULE = 'USING CRON 0 15 10 12 JAN ? 2025 America/Los_Angeles'
 
+
+Feature: Snowflake Stored Procedure Error Handling with AWS SNS Email Notification
+
+  Scenario Outline: Stored procedure throws an error which triggers an AWS SNS email notification
+    Given the stored procedure "<StoredProcName>" is set to trigger an AWS SNS email on failure
+    And a task "<TaskName>" is scheduled to execute the stored procedure
+    When the task is triggered
+    Then the stored procedure should attempt to execute its operations
+    But if the stored procedure fails
+    Then an error message "<ErrorMessage>" should be logged
+    And an AWS SNS email notification should be sent to the specified recipients
+
