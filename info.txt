@@ -46,3 +46,10 @@ WHEN (SURV_ID = 'SV_es2GPhwuAlrknhI' AND (
      (COALESCE(RSPN_JSON:result:values:QID30, RSPN_JSON:values:QID30) IS NULL OR
       COALESCE(RSPN_JSON:result:values:QID30, RSPN_JSON:values:QID30) = ''))) THEN 1
 
+
+WHEN (SURV_ID = 'SV_2rd9TwFmJsoEZWC' AND (
+    (TRY_TO_TIMESTAMP(COALESCE(RSPN_JSON:result:values:endDate::string, RSPN_JSON:values:EndDate::string)) < '2023-10-18'::date OR
+     COALESCE(RSPN_JSON:result:values:endDate, RSPN_JSON:values:EndDate) IS NULL)
+)) THEN 1
+
+
