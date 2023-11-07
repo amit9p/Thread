@@ -26,3 +26,15 @@ Feature: Snowflake Stored Procedure Error Handling with AWS SNS Email Notificati
     Then an error message "<ErrorMessage>" should be logged
     And an AWS SNS email notification should be sent to the specified recipients
 
+
+WHEN (
+  SURV_ID = 'SV_es2GPhwuAlrknhI' AND (
+    COALESCE(RSPN_JSON:result:values:Disqualified, RSPN_JSON:values:Disqualified) <> 'Y' OR
+    (
+      COALESCE(RSPN_JSON:result:values:QID7, '') = '' OR
+      COALESCE(RSPN_JSON:result:values:QID30, '') = ''
+    )
+  )
+) THEN 1
+
+
