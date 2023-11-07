@@ -38,3 +38,11 @@ WHEN (
 ) THEN 1
 
 
+
+WHEN (SURV_ID = 'SV_es2GPhwuAlrknhI' AND (
+      COALESCE(RSPN_JSON:result:values:Disqualified, RSPN_JSON:values:Disqualified) <> 'Y' AND
+     (COALESCE(RSPN_JSON:result:values:QID7, RSPN_JSON:values:QID7)  IS NULL OR
+      COALESCE(RSPN_JSON:result:values:QID7, RSPN_JSON:values:QID7)  = '') AND
+     (COALESCE(RSPN_JSON:result:values:QID30, RSPN_JSON:values:QID30) IS NULL OR
+      COALESCE(RSPN_JSON:result:values:QID30, RSPN_JSON:values:QID30) = ''))) THEN 1
+
