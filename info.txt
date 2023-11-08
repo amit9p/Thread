@@ -70,3 +70,21 @@ Feature: Exclude survey results prior to 9/7/2022 for survey SV_2rd9TwFmJsoEZWC
       | survey_id           | threshold_date |
       | SV_2rd9TwFmJsoEZWC  | 2022-09-07     |
 
+Feature: Prevent feature branches from subscribing to Qualtrics web hooks
+
+  As a Data Engineer,
+  I need to ensure that feature branches do not subscribe to Qualtrics web hooks
+  in order to avoid unnecessary costs and maintain efficient resource usage.
+
+  Background:
+    Given the codebase includes a mechanism to identify feature versus non-feature branches
+
+  Scenario: Exclude feature branches from Qualtrics web hook subscriptions
+    Given a branch is pushed to the repository
+    When the branch is identified as a "feature" branch
+    Then the Terraform configuration should not create a subscription to Qualtrics web hooks
+
+  Scenario: Allow non-feature branches to subscribe to Qualtrics web hooks
+    Given a branch is pushed to the repository
+    When the branch is not identified as a "feature" branch
+    Then the Terraform configuration should be allowed to create a subscription to Qualtrics web hooks
