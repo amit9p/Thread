@@ -53,3 +53,20 @@ WHEN (SURV_ID = 'SV_2rd9TwFmJsoEZWC' AND (
 )) THEN 1
 
 
+
+Feature: Exclude survey results prior to 9/7/2022 for survey SV_2rd9TwFmJsoEZWC
+
+  In order to maintain accurate data in the Qualtrics dashboard
+  As a data analyst
+  I want to ensure that no survey results before 9/7/2022 are included in the query for survey SV_2rd9TwFmJsoEZWC
+
+  Scenario Outline: Query survey results after a specific date
+    Given the survey "<survey_id>" has been conducted
+    And the survey end date threshold is set to "<threshold_date>"
+    When I query for survey responses
+    Then I should not get any results that occurred before the "<threshold_date>"
+
+    Examples:
+      | survey_id           | threshold_date |
+      | SV_2rd9TwFmJsoEZWC  | 2022-09-07     |
+
