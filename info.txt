@@ -88,3 +88,6 @@ Feature: Prevent feature branches from subscribing to Qualtrics web hooks
     Given a branch is pushed to the repository
     When the branch is not identified as a "feature" branch
     Then the Terraform configuration should be allowed to create a subscription to Qualtrics web hooks
+
+
+ SELECT PROCEDURE_DEFINITION FROM INFORMATION_SCHEMA.PROCEDURES WHERE PROCEDURE_NAME = '<procedure_name>' AND PROCEDURE_SCHEMA = '<schema_name>';
