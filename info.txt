@@ -1,5 +1,18 @@
-WHEN (SURV_ID = 'SV_es2GPhwuAlrknhI' AND (
-    COALESCE(RSPN_JSON:result:values:Disqualified, RSPN_JSON:values:Disqualified) = 'Y' OR
-    COALESCE(RSPN_JSON:result:values:QID30, RSPN_JSON:values:QID30, 'NOT_PRESENT') IN ('', 'NOT_PRESENT') OR
-    COALESCE(RSPN_JSON:result:values:QID7, RSPN_JSON:values:QID7, 'NOT_PRESENT') IN ('', 'NOT_PRESENT')
-)) THEN 1
+-- Assuming you have a stored procedure named `my_procedure` which returns 1 on success and 0 on failure
+
+-- Initial Task
+CREATE OR REPLACE TASK my_task
+WAREHOUSE = mywarehouse
+SCHEDULE = 'USING CRON ...'
+AS
+CALL my_procedure();
+
+-- Retry Task 1 (Retry after 1 hour, for example)
+CREATE OR REPLACE TASK my_task_retry1
+WAREHOUSE = mywarehouse
+AFTER my_task
+WHEN SYSTEM$STREAM_HAS_DATA('...') -- Condition to check if the previous task failed
+AS
+CALL my_procedure();
+
+-- You can create more retry tasks with similar logic and increasing delays
