@@ -1,18 +1,35 @@
--- Assuming you have a stored procedure named `my_procedure` which returns 1 on success and 0 on failure
-
--- Initial Task
-CREATE OR REPLACE TASK my_task
-WAREHOUSE = mywarehouse
-SCHEDULE = 'USING CRON ...'
+CREATE OR REPLACE PROCEDURE retry_with_delay()
+RETURNS STRING
+LANGUAGE JAVASCRIPT
+EXECUTE AS CALLER
 AS
-CALL my_procedure();
+$$
+    var maxRetries = 3;
+    var retryCount = 0;
+    var success = false;
+    var delayMinutes = 30; // 30 minutes delay
+    var delayMillis = delayMinutes * 60000; // Convert minutes to milliseconds
 
--- Retry Task 1 (Retry after 1 hour, for example)
-CREATE OR REPLACE TASK my_task_retry1
-WAREHOUSE = mywarehouse
-AFTER my_task
-WHEN SYSTEM$STREAM_HAS_DATA('...') -- Condition to check if the previous task failed
-AS
-CALL my_procedure();
+    while (retryCount < maxRetries && !success) {
+        try {
+            // Your code logic here
 
--- You can create more retry tasks with similar logic and increasing delays
+            // If successful, set success to true
+            success = true;
+        } catch (err) {
+            // Handle error
+            retryCount++;
+            // Wait for delayMillis before next retry
+            if (!success && retryCount < maxRetries) {
+                var start = new Date().getTime();
+                while (new Date().getTime() < start + delayMillis);
+            }
+        }
+    }
+
+    if (success) {
+        return "SUCCESS";
+    } else {
+        return "FAILURE";
+    }
+$$;
