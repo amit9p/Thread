@@ -1,3 +1,18 @@
 File Format Issues: Occasionally, the way the file is read might cause Snowflake to misinterpret the number of columns. This could be due to irregularities in how data is delimited or newline characters are handled.
 
 Network or Storage Glitches: Infrequent glitches in network or storage (especially if the file is on cloud storage like S3) can cause incomplete or incorrect file reads.
+
+CREATE OR REPLACE TASK my_initial_task
+WAREHOUSE = my_warehouse
+SCHEDULE = 'USING CRON 0 * * * * UTC'  -- This runs at the top of every hour
+AS
+CALL my_procedure();  -- Replace with your SQL command or stored procedure
+
+
+CREATE OR REPLACE TASK my_retry_task
+WAREHOUSE = my_warehouse
+SCHEDULE = 'USING CRON 30 * * * * UTC'  -- This runs 30 minutes after the initial task
+WHEN SYSTEM$TASK_DEPENDENCY(my_initial_task) = 'FAILED'
+AS
+CALL my_procedure();  -- Same command or stored procedure for retry
+
