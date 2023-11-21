@@ -1,35 +1,3 @@
-CREATE OR REPLACE PROCEDURE retry_with_delay()
-RETURNS STRING
-LANGUAGE JAVASCRIPT
-EXECUTE AS CALLER
-AS
-$$
-    var maxRetries = 3;
-    var retryCount = 0;
-    var success = false;
-    var delayMinutes = 30; // 30 minutes delay
-    var delayMillis = delayMinutes * 60000; // Convert minutes to milliseconds
+File Format Issues: Occasionally, the way the file is read might cause Snowflake to misinterpret the number of columns. This could be due to irregularities in how data is delimited or newline characters are handled.
 
-    while (retryCount < maxRetries && !success) {
-        try {
-            // Your code logic here
-
-            // If successful, set success to true
-            success = true;
-        } catch (err) {
-            // Handle error
-            retryCount++;
-            // Wait for delayMillis before next retry
-            if (!success && retryCount < maxRetries) {
-                var start = new Date().getTime();
-                while (new Date().getTime() < start + delayMillis);
-            }
-        }
-    }
-
-    if (success) {
-        return "SUCCESS";
-    } else {
-        return "FAILURE";
-    }
-$$;
+Network or Storage Glitches: Infrequent glitches in network or storage (especially if the file is on cloud storage like S3) can cause incomplete or incorrect file reads.
