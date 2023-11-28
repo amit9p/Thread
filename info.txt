@@ -1,18 +1,32 @@
-File Format Issues: Occasionally, the way the file is read might cause Snowflake to misinterpret the number of columns. This could be due to irregularities in how data is delimited or newline characters are handled.
+1. Not Null Test for SURV_ID:
 
-Network or Storage Glitches: Infrequent glitches in network or storage (especially if the file is on cloud storage like S3) can cause incomplete or incorrect file reads.
+Feature: Not Null Test for SURV_ID in surv_sub_ques_dmnsn table
+Scenario: Ensure SURV_ID is never null
+  Given a table surv_sub_ques_dmnsn
+  When the table is queried
+  Then SURV_ID should not have any null values
 
-CREATE OR REPLACE TASK my_initial_task
-WAREHOUSE = my_warehouse
-SCHEDULE = 'USING CRON 0 * * * * UTC'  -- This runs at the top of every hour
-AS
-CALL my_procedure();  -- Replace with your SQL command or stored procedure
+2.Unique Test for SURV_ID
 
+Feature: Unique Test for SURV_ID in surv_sub_ques_dmnsn table
+Scenario: Ensure SURV_ID is unique
+  Given a table surv_sub_ques_dmnsn
+  When the table is queried
+  Then each SURV_ID value should be unique
 
-CREATE OR REPLACE TASK my_retry_task
-WAREHOUSE = my_warehouse
-SCHEDULE = 'USING CRON 30 * * * * UTC'  -- This runs 30 minutes after the initial task
-WHEN SYSTEM$TASK_DEPENDENCY(my_initial_task) = 'FAILED'
-AS
-CALL my_procedure();  -- Same command or stored procedure for retry
+3.Correct String Length for SURV_ID:
+
+Feature: String Length Test for SURV_ID in surv_sub_ques_dmnsn table
+Scenario: Ensure SURV_ID has a length of 18 characters
+  Given a table surv_sub_ques_dmnsn
+  When the table is queried
+  Then each SURV_ID should have a length of 18 characters
+
+4.SURV_ID Format Like 'SV_%':
+
+Feature: Format Test for SURV_ID in surv_sub_ques_dmnsn table
+Scenario: Ensure SURV_ID follows the format 'SV_%'
+  Given a table surv_sub_ques_dmnsn
+  When the table is queried
+  Then each SURV_ID should start with 'SV_'
 
