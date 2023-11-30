@@ -1,13 +1,18 @@
-# Import necessary modules
 import pytest
 from unittest.mock import Mock
 from qlik_tools.adapters import Adapter
 from qlik_task import notify_Qlik
 
 def test_notify_Qlik(mocker):
-    # Mock the Adapter class and its post method
+    # Mock the Adapter class
     mock_adapter = Mock(spec=Adapter)
     mock_response = Mock()
+    
+    # Set the necessary attributes on the mock adapter
+    mock_adapter.base_url = "https://mock-base-url.com"
+    mock_adapter.xrf_key = "mockXrfKey"
+
+    # Mock the post method of the Adapter class
     mocker.patch.object(mock_adapter, 'post', return_value=mock_response)
 
     # Define the test data
@@ -23,6 +28,7 @@ def test_notify_Qlik(mocker):
     # Assertions to verify correct behavior
     mock_adapter.post.assert_called_once_with(url=expected_url, json=test_payload)
     assert response == mock_response
+
 
 
 
