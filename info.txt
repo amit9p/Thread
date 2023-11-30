@@ -48,10 +48,9 @@ def notify_Qlik(adapter: Adapter, payload: dict, api_endpoint: str) -> requests.
     return adapter.post(url=url, json=payload)
 
 -------------------------------------------------------------------------------------------------
+.coveragerc
+[run]
+omit = 
+    */tests/*
 
-COPY INTO your_table
-FROM @your_stage
-PATTERN='.*\.csv'
-FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '"' FLEXIBLE_ARRAY_MAPPING = TRUE)
-ON_ERROR = 'SKIP_FILE';
 
