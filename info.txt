@@ -49,10 +49,9 @@ def notify_Qlik(adapter: Adapter, payload: dict, api_endpoint: str) -> requests.
 
 -------------------------------------------------------------------------------------------------
 
-Background:
-    Given the QLTRCS_SFT_DEL table exists in the database
+COPY INTO your_table
+FROM @your_stage
+PATTERN='.*\.csv'
+FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '"' FLEXIBLE_ARRAY_MAPPING = TRUE)
+ON_ERROR = 'SKIP_FILE';
 
-  Scenario: Successfully add SURV_ID column to the table
-    When I add a new column named 'SURV_ID' of type 'VARCHAR(50)' to the QLTRCS_SFT_DEL table
-    Then the QLTRCS_SFT_DEL table should have the 'SURV_ID' column as the first column
-    And the 'SURV_ID' column should allow strings up to 50 characters long
