@@ -53,5 +53,5 @@ def notify_Qlik(adapter: Adapter, payload: dict, api_endpoint: str) -> requests.
 omit = 
     */tests/*
 
-pytest --cov=your_module_name --cov-report html --cov-config=.coveragerc
+pytest --cov=qlik_tools --cov-report html --cov-config=.coveragerc
 
