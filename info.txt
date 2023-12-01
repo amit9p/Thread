@@ -55,3 +55,49 @@ omit =
 
 pytest --cov=qlik_tools --cov-report html --cov-config=.coveragerc
 
+-------------------------------------------------------------------------------------------------------
+
+
+Title
+"Integration and Testing of notify_Qlik Function in Qlik Tools Module"
+Introduction
+Brief overview of the purpose of the notify_Qlik function.
+Importance of the function in the context of your Qlik Sense integration.
+Function Implementation
+Objective: Explain what notify_Qlik does.
+Parameters: Describe the parameters (adapter, payload, API endpoint) and their significance.
+Process Flow: Outline the steps the function takes internally (e.g., URL construction, making POST request).
+Code Snippet
+Include a code snippet of the notify_Qlik function.
+Optionally, add inline comments for clarity.
+Unit Testing
+Purpose of Testing: Emphasize the importance of unit testing for reliability and maintainability.
+Testing Framework: Mention the use of pytest and pytest-mock.
+Mocking Strategy: Explain why mocking is used (e.g., to isolate the function, avoid network calls).
+Test Case Description
+Test Objective: What the test is designed to check.
+Mock Setup: How the mocks are configured (setting base_url and xrf_key).
+Test Execution: Steps the test performs.
+Assertions: What assertions are made and why.
+Code Snippet of Test
+Include the code snippet of the test case.
+Add comments to explain critical parts of the test code.
+Troubleshooting Common Issues
+Describe issues like the AttributeError you encountered.
+Provide solutions or workarounds for these issues.
+Best Practices
+Coding standards used in the function and test (e.g., PEP 8 for Python).
+Tips for writing effective tests (e.g., aim for readability, maintainability).
+Additional Resources
+Links to relevant documentation (e.g., Qlik Sense API, pytest documentation).
+Any other resources that might be helpful for understanding or extending the work.
+Conclusion
+Recap the functionality and importance of the notify_Qlik function and its tests.
+Encourage feedback and suggestions for improvement.
+Visuals (Optional)
+Include flowcharts or diagrams if they aid in understanding.
+Screenshots of test execution results or relevant parts of the code.
+FAQs (Optional)
+Address common questions or concerns regarding the function or its testing.
+Remember to format the document with headings, bullet points, and code blocks for readability. Confluence also allows you to add labels for easy categorization and searchability within your organization.
+
