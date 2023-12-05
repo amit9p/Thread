@@ -100,4 +100,62 @@ Screenshots of test execution results or relevant parts of the code.
 FAQs (Optional)
 Address common questions or concerns regarding the function or its testing.
 Remember to format the document with headings, bullet points, and code blocks for readability. Confluence also allows you to add labels for easy categorization and searchability within your organization.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def test_start_task(mocker):
+    # Mock the Adapter and its post method
+    mock_adapter = Mock(spec=Adapter)
+    mock_adapter.base_url = "https://mock-base-url.com"
+    mock_adapter.xrf_key = "mockXrfKey"
+    mocker.patch.object(mock_adapter, 'post')
+
+    # Test data
+    test_task_id = "123"
+
+    # Call the start function
+    start(adapter=mock_adapter, task_id=test_task_id)
+
+    # Construct the expected URL
+    expected_url = f"{mock_adapter.base_url}/qrs/task/{test_task_id}/start/synchronous?Xrfkey={mock_adapter.xrf_key}"
+
+    # Assertion
+    mock_adapter.post.assert_called_once_with(url=expected_url)
+
+
+def test_list_all_tasks(mocker):
+    # Mock the Adapter and its get method
+    mock_adapter = Mock(spec=Adapter)
+    mock_adapter.base_url = "https://mock-base-url.com"
+    mock_adapter.xrf_key = "mockXrfKey"
+    mocker.patch.object(mock_adapter, 'get', return_value=Mock(status_code=200, text='[]'))
+
+    # Call the list_all function
+    response = list_all(adapter=mock_adapter)
+
+    # Construct the expected URL
+    expected_url = f"{mock_adapter.base_url}/task?Xrfkey={mock_adapter.xrf_key}"
+
+    # Assertions
+    assert response.status_code == 200
+    mock_adapter.get.assert_called_once_with(url=expected_url)
+
+
+def test_get_task(mocker):
+    # Mock the Adapter and its get method
+    mock_adapter = Mock(spec=Adapter)
+    mock_adapter.base_url = "https://mock-base-url.com"
+    mock_adapter.xrf_key = "mockXrfKey"
+    test_tasks = json.dumps([{"id": "123", "name": "Test Task"}])
+    mocker.patch.object(mock_adapter, 'get', return_value=Mock(status_code=200, text=test_tasks))
+
+    # Test data
+    test_task_id = "123"
+
+    # Call the get function
+    task = get(adapter=mock_adapter, task_id=test_task_id)
+
+    # Assertions
+    assert task['id'] == test_task_id
+    assert task['name'] == "Test Task"
+
 
